@@ -1,43 +1,45 @@
-	.syntax unified
-	.arch armv7-a
-	.text
-	.align 2
-	.thumb
-	.thumb_func
+/*
+Fibonacci Sequence Arm Assembly Implementation
+(Non-Recursive version)
+Unfinish yet.
+*/
 
-	.global fibonacci
-	.type fibonacci, function
+.global _start
+_start:
+    mov r1, #0  /* f(0) */
+    mov r2, #1  /* f(1) */
+    mov r3, #2  /* index of i */
+    mov r4, #12 /* index of fibo */
+    
+    /*
+    if (index == 0)
+        return 0;
+    if (index == 1)
+        return 1;
+    */
+    cmp r1, r4
+    moveq r0, r1
+    beq exit
 
-fibonacci:
-	@ ADD/MODIFY CODE BELOW
-	@ PROLOG
-	push {r3, r4, r5, lr}
+    cmp r2, r4
+    moveq r0, r2
+    beq exit
 
-	@ R4 = R0 - 0 (update flags)
-	@ if(R0 <= 0) goto .L3 (which returns 0)
+    add r4, r4, #1
 
-	@ Compare R4 wtih 1
-	@ If R4 == 1 goto .L4 (which returns 1)
+loop_cond:
+    cmp r3, r4
+    blt loop
+    mov r0, r5  @ Save result to r0
+    b exit
 
-	@ R0 = R4 - 1
-	@ Recursive call to fibonacci with R4 - 1 as parameter
+loop:
+    add r5, r1, r2
+    mov r1, r2
+    mov r2, r5
+    add r3, #1
+    b loop_cond
 
-	@ R5 = R0
-	@ R0 = R4 - 2
-	@ Recursive call to fibonacci with R4 - 2 as parameter
-
-	@ R0 = R5 + R0 (update flags)
-
-	pop {r3, r4, r5, pc}		@EPILOG
-
-	@ END CODE MODIFICATION
-.L3:
-	mov r0, #0			@ R0 = 0
-	pop {r3, r4, r5, pc}		@ EPILOG
-
-.L4:
-	mov r0, #1			@ R0 = 1
-	pop {r3, r4, r5, pc}		@ EPILOG
-
-	.size fibonacci, .-fibonacci
-	.end
+exit:
+    mov r7, #1
+    swi 0
